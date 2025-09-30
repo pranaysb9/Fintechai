@@ -1,0 +1,17 @@
+job:
+  name: clickstream-analytics
+  source:
+    type: kafka
+    topic: user-clicks
+    bootstrap_servers: "kafka:9092"
+    format: json
+  transform:
+    - type: filter
+      condition: "event_type == 'click'"
+    - type: map
+      expression: "{ user: user_id, page: page_url, time: timestamp }"
+  sink:
+    type: postgres
+    connection: "postgresql://admin:secret@db:5432/analytics"
+    table: click_events
+    mode: append
